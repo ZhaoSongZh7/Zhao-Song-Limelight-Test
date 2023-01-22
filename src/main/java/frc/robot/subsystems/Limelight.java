@@ -5,11 +5,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.fasterxml.jackson.databind.deser.ValueInstantiator.Gettable;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
@@ -17,9 +20,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 public class Limelight extends SubsystemBase {
-  Robot robot = new Robot();
+  Robot m_robot = new Robot();
+
+  XboxController m_xbox = new XboxController(2);
 
   WPI_TalonFX turretMotor = new WPI_TalonFX(Constants.OperatorConstants.turretMotorCANID);
 
@@ -27,6 +33,8 @@ public class Limelight extends SubsystemBase {
   NetworkTableEntry tx = table.getEntry("tx");
   NetworkTableEntry ty = table.getEntry("ty");
   NetworkTableEntry ta = table.getEntry("ta");
+
+  
 
   double x;
   double y;
@@ -36,8 +44,6 @@ public class Limelight extends SubsystemBase {
 
   /** Creates a new ExampleSubsystem. */
   public Limelight() {
-
-
   }
 
   public void getLimelightValue() {
@@ -48,15 +54,36 @@ public class Limelight extends SubsystemBase {
     SmartDashboard.putNumber("Limelight X", x);
     SmartDashboard.putNumber("Limelight Y", y);
     SmartDashboard.putNumber("LimelightArea", area);
-    SmartDashboard.putBoolean("Boolean", false);
+    SmartDashboard.putNumber("Get Pipeine", getPipeline());
   }
 
-  public void makeTurretTurn() {
-    turretMotorSpeed = (x/100) * 2.2;
+  public void setTurretMotorSpeed() {
     if (x != 0) {
-      turretMotor.set(turretMotorSpeed);
+      turretMotorSpeed = (x/100) * 2.2;
     } else {
-      turretMotor.set(0);
+      turretMotorSpeed = 0;
+    }
+    turretMotor.set(turretMotorSpeed);
+  }
+
+  public void setPipeline() {
+    if (m_xbox.getXButton()) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
+    } else if (m_xbox.getBButton()) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(7);
+    } 
+    // return NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getDouble(0);
+  }
+
+  public double getPipeline() {
+    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("getpipe").getDouble(0);
+  }
+
+  public void setLEDMode() {
+    if (getPipeline() == 0) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(0);
+    } else if (getPipeline() == 7) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(0);
     }
   }
   /**

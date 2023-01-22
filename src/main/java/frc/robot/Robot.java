@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,6 +29,9 @@ public class Robot extends TimedRobot {
 
   private Limelight m_limelight;
 
+  // public XboxController m_xbox;
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,8 +42,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     m_limelight = new Limelight();
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("getpipe").getDouble(-1);
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(7);
+    // m_xbox = new XboxController(2);
   }
 
   /**
@@ -52,7 +55,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_limelight.getLimelightValue();
-    m_limelight.makeTurretTurn();
+    m_limelight.setTurretMotorSpeed();
+    m_limelight.setPipeline();
+    m_limelight.setLEDMode();
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -97,7 +102,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
   }
 
   @Override
